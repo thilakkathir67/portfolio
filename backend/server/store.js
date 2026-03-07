@@ -1,33 +1,77 @@
-import fs from "node:fs/promises";
-import path from "node:path";
 import bcrypt from "bcryptjs";
+import { MongoClient } from "mongodb";
 import defaultContent from "../../shared/defaultContent.js";
 
-const DATA_DIR = path.resolve("backend", "server", "data");
-const DATA_FILE = path.join(DATA_DIR, "site-data.json");
+const MONGODB_URI = process.env.MONGODB_URI || "";
+const MONGODB_DB = process.env.MONGODB_DB || "portfolio";
+const MONGODB_COLLECTION = process.env.MONGODB_COLLECTION || "app_state";
+const STORE_DOC_ID = "singleton";
 
-async function ensureDataFile() {
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    const initialPasscode = process.env.ADMIN_PASSCODE || "removed-from-history";
-    const passcodeHash = await bcrypt.hash(initialPasscode, 10);
-    const initial = {
-      content: defaultContent,
-      passcodeHash
-    };
-    await fs.writeFile(DATA_FILE, JSON.stringify(initial, null, 2), "utf-8");
+let clientPromise = null;
+
+function getClient() {
+  if (!MONGODB_URI) {
+    throw new Error("Missing MONGODB_URI. Set your MongoDB Atlas connection string in environment variables.");
   }
+  if (!clientPromise) {
+    const client = new MongoClient(MONGODB_URI);
+    clientPromise = client.connect();
+  }
+  return clientPromise;
+}
+
+async function getCollection() {
+  const client = await getClient();
+  return client.db(MONGODB_DB).collection(MONGODB_COLLECTION);
+}
+
+async function ensureSeedDocument() {
+  const collection = await getCollection();
+  const existing = await collection.findOne({ _id: STORE_DOC_ID });
+  if (existing) return;
+
+  const initialPasscode = process.env.ADMIN_PASSCODE || "removed-from-history";
+  const passcodeHash = await bcrypt.hash(initialPasscode, 10);
+  await collection.insertOne({
+    _id: STORE_DOC_ID,
+    content: defaultContent,
+    passcodeHash,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  });
 }
 
 export async function readStore() {
-  await ensureDataFile();
-  const raw = await fs.readFile(DATA_FILE, "utf-8");
-  return JSON.parse(raw);
+  await ensureSeedDocument();
+  const collection = await getCollection();
+  const data = await collection.findOne(
+    { _id: STORE_DOC_ID },
+    { projection: { content: 1, passcodeHash: 1 } }
+  );
+  if (!data) {
+    throw new Error("Failed to read app state from MongoDB.");
+  }
+  return {
+    content: data.content,
+    passcodeHash: data.passcodeHash
+  };
 }
 
 export async function writeStore(nextStore) {
-  await ensureDataFile();
-  await fs.writeFile(DATA_FILE, JSON.stringify(nextStore, null, 2), "utf-8");
+  await ensureSeedDocument();
+  const collection = await getCollection();
+  await collection.updateOne(
+    { _id: STORE_DOC_ID },
+    {
+      $set: {
+        content: nextStore.content,
+        passcodeHash: nextStore.passcodeHash,
+        updatedAt: new Date()
+      },
+      $setOnInsert: {
+        createdAt: new Date()
+      }
+    },
+    { upsert: true }
+  );
 }
