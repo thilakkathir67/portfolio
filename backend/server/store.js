@@ -30,7 +30,10 @@ async function ensureSeedDocument() {
   const existing = await collection.findOne({ _id: STORE_DOC_ID });
   if (existing) return;
 
-  const initialPasscode = process.env.ADMIN_PASSCODE || "removed-from-history";
+  const initialPasscode = process.env.ADMIN_PASSCODE;
+  if (!initialPasscode) {
+    throw new Error("Missing ADMIN_PASSCODE environment variable.");
+  }
   const passcodeHash = await bcrypt.hash(initialPasscode, 10);
   await collection.insertOne({
     _id: STORE_DOC_ID,

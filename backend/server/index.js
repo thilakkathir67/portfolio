@@ -8,8 +8,12 @@ import { readStore, writeStore } from "./store.js";
 
 const app = express();
 const PORT = Number(process.env.PORT || 8787);
-const JWT_SECRET = process.env.ADMIN_JWT_SECRET || "removed-from-history";
+const JWT_SECRET = process.env.ADMIN_JWT_SECRET;
 const JWT_EXPIRES = process.env.ADMIN_JWT_EXPIRES || "12h";
+
+if (!JWT_SECRET) {
+  throw new Error("Missing ADMIN_JWT_SECRET environment variable.");
+}
 
 app.use(express.json({ limit: "10mb" }));
 app.use(
