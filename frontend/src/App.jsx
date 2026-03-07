@@ -7,18 +7,35 @@ import PortfolioPage from "./pages/PortfolioPage";
 import { usePortfolio } from "./context/PortfolioContext";
 
 function AdminGuard({ children }) {
-  const { isAdmin } = usePortfolio();
+  const { isAdmin, loading } = usePortfolio();
+  if (loading) return null;
   if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
   return children;
 }
 
+function ScrollSectionsPage() {
+  return (
+    <>
+      <div id="home">
+        <HomePage />
+      </div>
+      <div id="about">
+        <AboutPage />
+      </div>
+      <div id="portfolio">
+        <PortfolioPage />
+      </div>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <Routes>
       <Route element={<SiteLayout />}>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<ScrollSectionsPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
         <Route

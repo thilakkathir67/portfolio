@@ -1,30 +1,45 @@
 import { useEffect, useRef, useState } from "react";
 import { Container } from "react-bootstrap";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { usePortfolio } from "../context/PortfolioContext";
 import AdminAccessModal from "./AdminAccessModal";
 import TopNav from "./TopNav";
 
 export default function SiteLayout() {
-  const { isAdmin, setIsAdmin, passcode } = usePortfolio();
+  const { isAdmin, unlockAdmin, lockAdmin } = usePortfolio();
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
   const clickCountRef = useRef(0);
   const clickTimerRef = useRef(null);
+  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
     function handleKeyDown(event) {
       if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "a") {
         event.preventDefault();
-        setError("");
-        setShowModal(true);
+        if (isAdmin) {
+          navigate("/admin");
+        } else {
+          setError("");
+          setShowModal(true);
+        }
       }
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [isAdmin, navigate]);
+
+  useEffect(() => {
+    if (!location.hash) return;
+    const targetId = location.hash.slice(1);
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [location.hash, location.pathname]);
 
   function resetSecretClicks() {
     clickCountRef.current = 0;
@@ -50,19 +65,19 @@ export default function SiteLayout() {
     }
   }
 
-  function handleUnlock(value) {
-    if (value === passcode) {
-      setIsAdmin(true);
+  async function handleUnlock(value) {
+    try {
+      await unlockAdmin(value);
       setShowModal(false);
       setError("");
       navigate("/admin");
-      return;
+    } catch {
+      setError("Incorrect passcode.");
     }
-    setError("Incorrect passcode.");
   }
 
-  function handleLockAdmin() {
-    setIsAdmin(false);
+  async function handleLockAdmin() {
+    await lockAdmin();
     navigate("/");
   }
 

@@ -7,18 +7,15 @@ const baseNavItems = [
   { label: "Portfolio", path: "/portfolio" }
 ];
 
-export default function TopNav({ onLogoClick, isAdmin, onLockAdmin }) {
+export default function TopNav({ isAdmin, onLockAdmin }) {
   const navItems = isAdmin ? [...baseNavItems, { label: "Admin", path: "/admin" }] : baseNavItems;
 
   return (
     <Navbar expand="lg" className="py-3 px-2 px-md-4">
       <Container fluid>
-        <Navbar.Brand as={NavLink} to="/" className="logo-text" onClick={onLogoClick}>
-          LOGO
-        </Navbar.Brand>
         <Navbar.Toggle aria-controls="main-nav" />
-        <Navbar.Collapse id="main-nav">
-          <Nav className="ms-auto gap-lg-4 me-lg-3">
+        <Navbar.Collapse id="main-nav" className="nav-collapse-right">
+          <Nav className="ms-auto gap-lg-4 me-lg-3 align-items-end text-end">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
@@ -30,16 +27,13 @@ export default function TopNav({ onLogoClick, isAdmin, onLockAdmin }) {
               </NavLink>
             ))}
           </Nav>
-          <div className="d-flex gap-2">
-            {isAdmin ? (
+          {isAdmin ? (
+            <div className="d-flex gap-2">
               <Button variant="outline-light" onClick={onLockAdmin}>
                 Lock
               </Button>
-            ) : null}
-            <Button as={NavLink} to="/" className="hire-btn">
-              Hire Me
-            </Button>
-          </div>
+            </div>
+          ) : null}
         </Navbar.Collapse>
       </Container>
     </Navbar>

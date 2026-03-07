@@ -57,9 +57,10 @@ function normalizeImportedContent(imported) {
 }
 
 export default function AdminPage() {
-  const { content, setContent, passcode, setPasscode } = usePortfolio();
+  const { content, setContent, updatePasscode } = usePortfolio();
   const [draft, setDraft] = useState(() => cloneContent(content));
-  const [nextPasscode, setNextPasscode] = useState(passcode);
+  const [currentPasscode, setCurrentPasscode] = useState("");
+  const [nextPasscode, setNextPasscode] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const stats = useMemo(() => draft.hero.stats.slice(0, 3), [draft.hero.stats]);
@@ -74,16 +75,26 @@ export default function AdminPage() {
     });
   }
 
-  function handleSave() {
-    setContent(cloneContent(draft));
-    setPasscode(nextPasscode || passcode);
-    setError("");
-    setMessage("Saved. Content updated.");
+  async function handleSave() {
+    try {
+      await setContent(cloneContent(draft));
+      if (nextPasscode.trim()) {
+        await updatePasscode(currentPasscode, nextPasscode.trim());
+        setCurrentPasscode("");
+        setNextPasscode("");
+      }
+      setError("");
+      setMessage("Saved. Content updated.");
+    } catch (saveError) {
+      setError(saveError.message || "Could not save changes.");
+      setMessage("");
+    }
   }
 
   function handleReset() {
     setDraft(cloneContent(content));
-    setNextPasscode(passcode);
+    setCurrentPasscode("");
+    setNextPasscode("");
     setError("");
     setMessage("Reverted unsaved changes.");
   }
@@ -118,21 +129,6 @@ export default function AdminPage() {
       }
     };
     reader.readAsText(file);
-    event.target.value = "";
-  }
-
-  function handleResumeUpload(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      updateField(["about", "resumeUrl"], String(reader.result));
-      updateField(["about", "resumeFileName"], file.name || "resume.pdf");
-      setMessage("Resume uploaded to draft. Click Save changes.");
-      setError("");
-    };
-    reader.onerror = () => setError("Could not read resume file.");
-    reader.readAsDataURL(file);
     event.target.value = "";
   }
 
@@ -450,7 +446,8 @@ export default function AdminPage() {
             <Accordion.Header>Security And Data</Accordion.Header>
             <Accordion.Body>
               <Row className="g-3">
-                <Col md={6}><Form.Group><Form.Label>Admin passcode</Form.Label><Form.Control type="password" value={nextPasscode} onChange={(e) => setNextPasscode(e.target.value)} /></Form.Group></Col>
+                <Col md={6}><Form.Group><Form.Label>Current admin passcode</Form.Label><Form.Control type="password" value={currentPasscode} onChange={(e) => setCurrentPasscode(e.target.value)} placeholder="Required only if changing passcode" /></Form.Group></Col>
+                <Col md={6}><Form.Group><Form.Label>New admin passcode</Form.Label><Form.Control type="password" value={nextPasscode} onChange={(e) => setNextPasscode(e.target.value)} placeholder="Leave blank to keep current passcode" /></Form.Group></Col>
                 <Col md={12} className="d-flex flex-wrap gap-2 mt-3">
                   <Button className="hire-btn" onClick={handleSave}>Save changes</Button>
                   <Button variant="outline-light" onClick={handleReset}>Reset draft</Button>

@@ -4,12 +4,19 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "concurrently \"npm:dev:web\" \"npm:dev:api\"",
+    "dev:web": "vite --config frontend/vite.config.js",
+    "dev:api": "node --watch backend/server/index.js",
+    "build": "vite build --config frontend/vite.config.js",
+    "preview": "vite preview --config frontend/vite.config.js",
+    "start": "node backend/server/index.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "bootstrap": "^5.3.3",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.3.1",
@@ -17,6 +24,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.2",
+    "concurrently": "^9.2.1",
     "vite": "^5.4.10"
   }
 }
