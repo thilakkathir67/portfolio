@@ -6,7 +6,7 @@ import AdminAccessModal from "./AdminAccessModal";
 import TopNav from "./TopNav";
 
 export default function SiteLayout() {
-  const { isAdmin, unlockAdmin, lockAdmin } = usePortfolio();
+  const { isAdmin, unlockAdmin, lockAdmin, loading } = usePortfolio();
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
   const clickCountRef = useRef(0);
@@ -79,6 +79,14 @@ export default function SiteLayout() {
   async function handleLockAdmin() {
     await lockAdmin();
     navigate("/");
+  }
+
+  if (loading) {
+    return (
+      <div className="page-root">
+        <Container fluid className="hero-panel" />
+      </div>
+    );
   }
 
   return (
