@@ -4,3 +4,5 @@ build/
 .env
 backend/server/data/
 commands.local.txt
+*.log
+image (1).png

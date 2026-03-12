@@ -56,6 +56,14 @@ function normalizeImportedContent(imported) {
   return next;
 }
 
+function deriveAboutText(about) {
+  const blocks = Array.isArray(about?.blocks) ? about.blocks : [];
+  const firstText = blocks.find(
+    (block) => block?.type !== "image" && typeof block?.value === "string" && block.value.trim()
+  );
+  return firstText ? firstText.value.trim() : "";
+}
+
 export default function AdminPage() {
   const { content, setContent, updatePasscode } = usePortfolio();
   const [draft, setDraft] = useState(() => cloneContent(content));
@@ -77,7 +85,10 @@ export default function AdminPage() {
 
   async function handleSave() {
     try {
-      await setContent(cloneContent(draft));
+      const payload = cloneContent(draft);
+      payload.about = payload.about || {};
+      payload.about.text = deriveAboutText(payload.about);
+      await setContent(payload);
       if (nextPasscode.trim()) {
         await updatePasscode(currentPasscode, nextPasscode.trim());
         setCurrentPasscode("");
