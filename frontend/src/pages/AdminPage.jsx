@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Accordion, Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { usePortfolio } from "../context/PortfolioContext";
 
@@ -71,7 +71,6 @@ export default function AdminPage() {
   const [nextPasscode, setNextPasscode] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const stats = useMemo(() => draft.hero.stats.slice(0, 3), [draft.hero.stats]);
 
   function updateField(path, value) {
     setDraft((prev) => {
@@ -245,12 +244,6 @@ export default function AdminPage() {
                 <Col md={6}><Form.Group><Form.Label>Hero title</Form.Label><Form.Control value={draft.hero.title} onChange={(e) => updateField(["hero", "title"], e.target.value)} /></Form.Group></Col>
                 <Col md={6}><Form.Group><Form.Label>Hero image URL</Form.Label><Form.Control value={draft.hero.imageUrl} onChange={(e) => updateField(["hero", "imageUrl"], e.target.value)} /></Form.Group></Col>
                 <Col md={12}><Form.Group><Form.Label>Hero summary</Form.Label><Form.Control as="textarea" rows={3} value={draft.hero.summary || ""} onChange={(e) => updateField(["hero", "summary"], e.target.value)} /></Form.Group></Col>
-                {stats.map((stat, index) => (
-                  <Col md={6} key={`stat-${index}`}>
-                    <Form.Group className="mb-2"><Form.Label>{`Stat ${index + 1} value`}</Form.Label><Form.Control value={stat.value} onChange={(e) => updateField(["hero", "stats", index, "value"], e.target.value)} /></Form.Group>
-                    <Form.Group><Form.Label>{`Stat ${index + 1} label`}</Form.Label><Form.Control value={stat.label} onChange={(e) => updateField(["hero", "stats", index, "label"], e.target.value)} /></Form.Group>
-                  </Col>
-                ))}
               </Row>
             </Accordion.Body>
           </Accordion.Item>
