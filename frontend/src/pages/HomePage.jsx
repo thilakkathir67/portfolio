@@ -29,9 +29,7 @@ export default function HomePage() {
     { name: "GitHub", src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" }
   ];
   const summary =
-    (content.about.blocks || []).find((block) => block?.type === "text" && typeof block?.value === "string")?.value ||
-    content.about.text ||
-    "I build practical, user-focused web experiences and keep improving through hands-on projects.";
+    hero.summary || "I build practical, user-focused web experiences and keep improving through hands-on projects.";
 
   function handleProfileClick() {
     const aboutSection = document.getElementById("about");

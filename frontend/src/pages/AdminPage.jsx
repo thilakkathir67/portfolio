@@ -244,7 +244,7 @@ export default function AdminPage() {
                 <Col md={6}><Form.Group><Form.Label>Hero name</Form.Label><Form.Control value={draft.hero.name} onChange={(e) => updateField(["hero", "name"], e.target.value)} /></Form.Group></Col>
                 <Col md={6}><Form.Group><Form.Label>Hero title</Form.Label><Form.Control value={draft.hero.title} onChange={(e) => updateField(["hero", "title"], e.target.value)} /></Form.Group></Col>
                 <Col md={6}><Form.Group><Form.Label>Hero image URL</Form.Label><Form.Control value={draft.hero.imageUrl} onChange={(e) => updateField(["hero", "imageUrl"], e.target.value)} /></Form.Group></Col>
-                <Col md={12}><Form.Group><Form.Label>Social tags (comma separated)</Form.Label><Form.Control value={draft.hero.socials.join(", ")} onChange={(e) => updateField(["hero", "socials"], e.target.value.split(",").map((x) => x.trim()).filter(Boolean))} /></Form.Group></Col>
+                <Col md={12}><Form.Group><Form.Label>Hero summary</Form.Label><Form.Control as="textarea" rows={3} value={draft.hero.summary || ""} onChange={(e) => updateField(["hero", "summary"], e.target.value)} /></Form.Group></Col>
                 {stats.map((stat, index) => (
                   <Col md={6} key={`stat-${index}`}>
                     <Form.Group className="mb-2"><Form.Label>{`Stat ${index + 1} value`}</Form.Label><Form.Control value={stat.value} onChange={(e) => updateField(["hero", "stats", index, "value"], e.target.value)} /></Form.Group>

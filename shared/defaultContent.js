@@ -3,6 +3,7 @@ const defaultContent = {
     intro: "Hi I am",
     name: "Thilak",
     title: "UI/UX Designer",
+    summary: "I build practical, user-focused web experiences and keep improving through hands-on projects.",
     imageUrl:
       "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
     socials: ["IG", "IN", "BE", "DR"],
