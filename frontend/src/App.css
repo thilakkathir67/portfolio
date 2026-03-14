@@ -1092,6 +1092,11 @@ img {
     min-height: 200px;
     aspect-ratio: 16 / 9;
     border-radius: 16px;
+    background: #07080c;
+  }
+
+  .feature-image {
+    object-fit: contain;
   }
 
   .proj-nav-btn {
