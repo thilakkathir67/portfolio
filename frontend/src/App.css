@@ -1086,6 +1086,9 @@ img {
     padding: 16px;
     gap: 16px;
     border-radius: 18px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .feature-image-wrap {
@@ -1093,10 +1096,13 @@ img {
     aspect-ratio: 16 / 9;
     border-radius: 16px;
     background: #07080c;
+    width: 100%;
+    max-width: 100%;
   }
 
   .feature-image {
     object-fit: contain;
+    display: block;
   }
 
   .proj-nav-btn {
