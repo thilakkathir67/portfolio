@@ -1064,4 +1064,51 @@ body {
   .stats-grid > div:last-child {
     border-bottom: none;
   }
+
+  /* Portfolio project carousel: make the image larger and controls less intrusive on phones. */
+  .feature-card {
+    padding: 16px;
+    gap: 16px;
+    border-radius: 18px;
+  }
+
+  .feature-image-wrap {
+    min-height: 200px;
+    aspect-ratio: 16 / 9;
+    border-radius: 16px;
+  }
+
+  .proj-nav-btn {
+    top: auto;
+    bottom: 12px;
+    transform: none;
+    width: 32px;
+    height: 32px;
+    font-size: 1.25rem;
+  }
+
+  .proj-nav-left {
+    left: 12px;
+  }
+
+  .proj-nav-right {
+    right: 12px;
+  }
+
+  .proj-slide-count {
+    display: none;
+  }
+
+  .proj-dots {
+    bottom: 12px;
+  }
+
+  .proj-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .proj-dot.active {
+    width: 26px;
+  }
 }
