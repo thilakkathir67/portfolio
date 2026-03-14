@@ -192,11 +192,9 @@ img {
 
 .hero-contact-box {
   margin-top: 12px;
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
   gap: 10px;
-  width: 100%;
-  max-width: 560px;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid rgba(255, 122, 0, 0.38);
@@ -1037,6 +1035,12 @@ img {
 }
 
 @media (max-width: 640px) {
+  .hero-contact-box {
+    display: flex;
+    width: 100%;
+    max-width: 560px;
+  }
+
   .about-page {
     padding-top: 60px;
   }
